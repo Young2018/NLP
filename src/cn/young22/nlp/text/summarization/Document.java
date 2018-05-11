@@ -129,7 +129,6 @@ public class Document {
 				dTf.add(allTf[i]);
 			}
 		}
-		
 	}
 	
 	// 计算两个句子的余弦相似度

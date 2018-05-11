@@ -8,6 +8,11 @@ import java.util.ArrayList;
 
 public class RecognizeStopWords {
 	
+	/**
+	 * 将读取的文件转为ArrayList<String>
+	 * @param filePath
+	 * @return
+	 */
 	private static ArrayList<String> readTxtFileToArrayList(String filePath) {
 		String s = "";
 		ArrayList<String> arrayList = new ArrayList<>();
@@ -25,8 +30,6 @@ public class RecognizeStopWords {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
 		return arrayList;
 	}
 	

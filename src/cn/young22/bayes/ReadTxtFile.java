@@ -6,6 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReadTxtFile {
+	/**
+	 * 读取文件夹中后缀为txt的文件，并返回文件的路径集合
+	 * @param file 目录的路径
+	 * @return txt文件的路径集合
+	 */
 	public static List<String> getFileList(File file) {
 
 		List<String> result = new ArrayList<String>();
@@ -29,7 +34,12 @@ public class ReadTxtFile {
 		}
 		return result;
 	}
-
+	
+	/**
+	 * 读取文件目录，将其中的txt文件集转为String类型的列表
+	 * @param dir txt文件集的目录地址
+	 * @return txt文件集转为String类型的列表
+	 */
 	public static List<String> readDirToStrings(String dir) {
 		File f = new File(dir);
 		List<String> list = new ArrayList<String>();

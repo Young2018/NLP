@@ -1,8 +1,6 @@
 package cn.young22.bayes;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,28 +27,6 @@ public class BayesClassifier {
 	private static double zoomFactor = 20.0f;
 	
 	/**
-	 * 类别数目
-	 */
-	private int nClasses;
-	/**
-	 * 类别标签
-	 */
-	public ArrayList<Integer> labelIndex = new ArrayList<Integer>();
-	/**
-	 * 训练集的cache文件,存放在磁盘上
-	 */
-	public File tsCacheFile;
-	/**
-	 * 训练集的cache输出流
-	 */
-	public DataOutputStream tsCache = null;
-	
-	
-	public void init (int nClasses){
-		this.nClasses = nClasses;
-	}
-	
-	/**
 	 * 默认的构造器,初始化训练集
 	 */
 	public BayesClassifier(){
@@ -66,57 +42,17 @@ public class BayesClassifier {
 	 */
 	double calcProd(String[] X, String Cj){
 		double probProd = 1.0f;
-		
 		// 类条件概率连乘
 		for(int i = 0; i < X.length; i++){
 			String Xi = X[i];
 			probProd *= ClassConditionalProbability.calculatePxc(Xi, Cj) * zoomFactor;
 		}
-		
 		// 再乘以先验概率
 		probProd *= PriorProbability.calculatePc(Cj);
 		return probProd;
 	}
 	
-	/**
-	 * 加入一篇训练文档、要求label是相遇总类别数的整数,从0开始
-	 * @param text  训练文本
-	 * @param label 类别编号
-	 * @return 加入是否成功。不成功可能是由于不能在磁盘上创建临时文件
-	 */
-	public boolean addTrainingText(String text, int label){
-		if(label >= nClasses || label < 0){
-			return false;
-		}
-		if(tsCache == null){
-			try{
-				tsCacheFile = File.createTempFile("tctscache", "data");
-				tsCache = new DataOutputStream(
-							new BufferedOutputStream(
-							new FileOutputStream(tsCacheFile)));
-			}catch(IOException e){
-				return false;
-			}
-		}
-		if(!labelIndex.contains(label)){
-			labelIndex.add(label);
-		}
-		return true;
-	}
 	
-	
-	public String[] DropStopWords(String[] oldWords){
-		Vector<String> v1 = new Vector<>();
-		for(int i = 0; i < oldWords.length; i++){
-			// 不是停用词，加入到新的向量中
-			if(RecognizeStopWords.isStopWord(oldWords[i]) == false){
-				v1.add(oldWords[i]);
-			}
-		}
-		String[] newWords = new String[v1.size()];
-		v1.toArray(newWords);
-		return newWords;
-	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ClassifyResult classifyText(String text, String category){
@@ -155,6 +91,19 @@ public class BayesClassifier {
 		return crs.get(0);
 	}
 	
+	public String[] DropStopWords(String[] oldWords){
+		Vector<String> v1 = new Vector<>();
+		for(int i = 0; i < oldWords.length; i++){
+			// 不是停用词，加入到新的向量中
+			if(RecognizeStopWords.isStopWord(oldWords[i]) == false){
+				v1.add(oldWords[i]);
+			}
+		}
+		String[] newWords = new String[v1.size()];
+		v1.toArray(newWords);
+		return newWords;
+	}
+	
 	/**
 	 * 文本预处理
 	 * @param text
@@ -188,19 +137,11 @@ public class BayesClassifier {
 		return splitWords;
 	}
 	
-	public static void main(String[] args) {
-		if (Segmentor.create("./ltp_data/cws.model") < 0) {
-			System.err.println("load failed");
-			return;
-		}
-		// 从文本文件中读取文章
-//		String document = Util.readFileToString("testDocument.txt");
-		
-		String testingDir = "F:\\testSum\\rawDataTmp5P\\";
-		String resultPath = "5PTest.txt";
-		nbClassifierTester(testingDir, resultPath);
-	}
-
+	/**
+	 * naive bayes Chinese text classifier tester
+	 * @param testingDir
+	 * @param resultPath
+	 */
 	public static void nbClassifierTester(String testingDir, String resultPath) {
 		double startTime = System.currentTimeMillis();
 		
@@ -240,6 +181,7 @@ public class BayesClassifier {
 			System.out.println();
 		}*/
 		
+		// 使用分类结果构造混淆矩阵，进而使用混淆矩阵来计算Precision Recall 以及F-Measure
 		double[][] confusionMatrix = new double[categories.length][categories.length];
 		int row = 0;
 		for(List<ClassifyResult> tmpRL : resultLists){
@@ -276,12 +218,12 @@ public class BayesClassifier {
 			f[i] = 2 * precision[i] * recall[i] / (precision[i] + recall[i]);
 		}
 		
+		// table names
 		String resultString = "\t precision" + "\t" + "recall\t\t" + "F-Measure\t\n";
-		
 		
 //		System.out.print(resultString);
 		for(int i = 0; i < confusionMatrix.length; i++){
-			String tmpString = idToCategory.get(i) + " :" + precision[i] + "\t\t" + recall[i] + "\t\t" +f[i] + "\n";
+			String tmpString = idToCategory.get(i) + "\t:" + precision[i] + "\t\t" + recall[i] + "\t\t" +f[i] + "\n";
 //			System.out.print(tmpString);
 			resultString += tmpString;
 		}
@@ -305,8 +247,20 @@ public class BayesClassifier {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-//		File resultFile = new File(r);
-		
 	}
+	
+	public static void main(String[] args) {
+		if (Segmentor.create("./ltp_data/cws.model") < 0) {
+			System.err.println("load failed");
+			return;
+		}
+		// 从文本文件中读取文章
+//		String document = Util.readFileToString("testDocument.txt");
+		
+		String testingDir = "F:\\testSum\\rawDataTmp5P\\";
+		String resultPath = "5PTest.txt";
+		nbClassifierTester(testingDir, resultPath);
+	}
+
+	
 }
