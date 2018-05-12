@@ -223,7 +223,7 @@ public class BayesClassifier {
 		
 //		System.out.print(resultString);
 		for(int i = 0; i < confusionMatrix.length; i++){
-			String tmpString = idToCategory.get(i) + "\t:" + precision[i] + "\t\t" + recall[i] + "\t\t" +f[i] + "\n";
+			String tmpString = idToCategory.get(i) + ":\t" + precision[i] + "\t\t" + recall[i] + "\t\t" +f[i] + "\n";
 //			System.out.print(tmpString);
 			resultString += tmpString;
 		}
