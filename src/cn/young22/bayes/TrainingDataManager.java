@@ -19,7 +19,7 @@ public class TrainingDataManager {
 
 	private String[] trainingFileClassifications;// 训练语料分类
 	private File trainingTextDirecotry; // 训练语料分类目录
-	private final static String DEFAULT_PATH = "F:\\testSumResult\\900_5S";
+	private final static String DEFAULT_PATH = "F:\\testSum\\training900";
 
 	/**
 	 * 训练器构造器

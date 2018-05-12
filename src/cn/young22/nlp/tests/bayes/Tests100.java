@@ -57,7 +57,7 @@ public class Tests100 {
 			return;
 		}
 		String testingDir = "F:\\testSumResult\\100_10P\\";
-		String resultPath = "100_10P.txt";
+		String resultPath = "100_10P_2.txt";
 		
 		BayesClassifier.nbClassifierTester(testingDir, resultPath);
 	}
@@ -107,7 +107,7 @@ public class Tests100 {
 			return;
 		}
 		String testingDir = "F:\\testSumResult\\100_10S\\";
-		String resultPath = "100_10S.txt";
+		String resultPath = "100_10S_2.txt";
 		
 		BayesClassifier.nbClassifierTester(testingDir, resultPath);
 	}
